@@ -7,7 +7,7 @@ public class AnimalGenerator : MonoBehaviour
 
     public GameObject[] animals;//どうぶつ取得配列
     public Camera mainCamera;//カメラ取得用変数
-    public float pivotHeight = 3;//生成位置の基準
+    public float pivotHeight = 5;//生成位置の基準
 
     public static int animalNum = 0;//生成された動物の個数を保管
     public static bool isGameOver = false;//ゲームオーバー判定
