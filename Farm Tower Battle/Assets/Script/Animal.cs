@@ -11,7 +11,7 @@ public class Animal : MonoBehaviour
     Moving moving = new Moving();//移動チェック変数
 
     /// <summary>
-    /// リストに追加&Rigidbody2D取得
+    /// リストに追加&Rigidbody取得
     /// </summary>
     private void Start()
     {

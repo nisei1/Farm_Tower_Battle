@@ -7,7 +7,7 @@ public class AnimalGenerator : MonoBehaviour
 
     public GameObject[] animals;//どうぶつ取得配列
     public Camera mainCamera;//カメラ取得用変数
-    public float pivotHeight = 5;//生成位置の基準
+    public float pivotHeight = 6.5f;//生成位置の基準
 
     public static int animalNum = 0;//生成された動物の個数を保管
     public static bool isGameOver = false;//ゲームオーバー判定
@@ -15,6 +15,8 @@ public class AnimalGenerator : MonoBehaviour
     private GameObject geneAnimal;//どうぶつ生成（単品）
     public bool isGene;//生成されているか
     public bool isFall;//生成された動物が落下中か
+
+    RaycastHit hit; //
 
     private void Start()
     {
@@ -53,22 +55,32 @@ public class AnimalGenerator : MonoBehaviour
             return;
         }
 
-        Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
+        int layerMask = (1 << LayerMask.NameToLayer("HitPanel")); //適当なレイヤーマスクを設定するよ
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
         {
-            if (!RotateButton.onButtonDown)//ボタンをクリックしていたら反応させない
+            //レイが当たった位置を得るよ
+            Vector3 v = hit.point;
+            Debug.Log(v);
+            //Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
+
+            if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
+            {
+                if (!RotateButton.onButtonDown)//ボタンをクリックしていたら反応させない
+                {
+                    geneAnimal.transform.position = v;
+                    geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン
+                    animalNum++;//どうぶつ生成
+                    isFall = true;//落ちて、どうぞ
+                }
+                RotateButton.onButtonDown = false;//マウスが上がったらボタンも離れたと思う
+            }
+            else if (Input.GetMouseButton(0))//ボタンが押されている間
             {
                 geneAnimal.transform.position = v;
-                geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン
-                animalNum++;//どうぶつ生成
-                isFall = true;//落ちて、どうぞ
             }
-            RotateButton.onButtonDown = false;//マウスが上がったらボタンも離れたと思う
-        }
-        else if (Input.GetMouseButton(0))//ボタンが押されている間
-        {
-            geneAnimal.transform.position = v;
         }
     }
 
@@ -136,7 +148,7 @@ public class AnimalGenerator : MonoBehaviour
         {
             if (b.isMove)
             {
-                //Debug.Log("移動中(*'ω'*)");
+                Debug.Log("移動中(*'ω'*)");
                 return true;
             }
         }
