@@ -56,14 +56,19 @@ public class AnimalGenerator : MonoBehaviour
         }
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
 
-        int layerMask = (1 << LayerMask.NameToLayer("HitPanel")); //適当なレイヤーマスクを設定するよ
+        //int layerMask = (1 << LayerMask.NameToLayer("HitPanel")); //適当なレイヤーマスクを設定するよ
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
+            float x = hit.point.x;
+            float z = hit.point.z;
+
+            Vector3 v = new Vector3(x, pivotHeight, z);
             //レイが当たった位置を得るよ
-            Vector3 v = hit.point;
-            Debug.Log(v);
+            //Vector3 v = hit.point;
+            //Debug.Log(v);
             //Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
 
             if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
