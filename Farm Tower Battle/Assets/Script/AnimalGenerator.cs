@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class AnimalGenerator : MonoBehaviour
 {
@@ -54,37 +55,36 @@ public class AnimalGenerator : MonoBehaviour
             isGene = true;
             return;
         }
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        //int layerMask = (1 << LayerMask.NameToLayer("HitPanel")); //適当なレイヤーマスクを設定するよ
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        if (!EventSystem.current.IsPointerOverGameObject())    //レイをボタンに当たらないようにする
         {
-            float x = hit.point.x;
-            float z = hit.point.z;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);    //レイが当たった位置を得るよ
+            RaycastHit hit;
 
-            Vector3 v = new Vector3(x, pivotHeight, z);
-            //レイが当たった位置を得るよ
-            //Vector3 v = hit.point;
-            //Debug.Log(v);
-            //Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
-
-            if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
-                if (!RotateButton.onButtonDown)//ボタンをクリックしていたら反応させない
+                float x = hit.point.x;
+                float z = hit.point.z;
+
+                Vector3 v = new Vector3(x, pivotHeight, z); //オブジェクトを生成した高さで座標を得る
+
+                //Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
+
+                if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
                 {
-                    geneAnimal.transform.position = v;
-                    geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン
-                    animalNum++;//どうぶつ生成
+                    if (!RotateButton.onButtonDown)//ボタンをクリックしていたら反応させない
+                    {
+                        geneAnimal.transform.position = v;
+                        geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン
+                        animalNum++;//どうぶつ生成
+
+                    }
+                    RotateButton.onButtonDown = false;//マウスが上がったらボタンも離れたと思う
                     isFall = true;//落ちて、どうぞ
                 }
-                RotateButton.onButtonDown = false;//マウスが上がったらボタンも離れたと思う
-            }
-            else if (Input.GetMouseButton(0))//ボタンが押されている間
-            {
-                geneAnimal.transform.position = v;
+                else if (Input.GetMouseButton(0))//ボタンが押されている間
+                {
+                    geneAnimal.transform.position = v;
+                }
             }
         }
     }
@@ -113,7 +113,7 @@ public class AnimalGenerator : MonoBehaviour
         while (CameraController.isCollision)
         {
             yield return new WaitForEndOfFrame();//フレームの終わりまで待つ（無いと無限ループ）
-            mainCamera.transform.Translate(0, 0.1f, 0);//カメラを少し上に移動
+            mainCamera.transform.Translate(0, 0.1f, 0, Space.World);//カメラを少し上に移動
             pivotHeight += 0.1f;//生成位置も少し上に移動
         }
         geneAnimal = Instantiate(animals[Random.Range(0, animals.Length)], new Vector3(0, pivotHeight), Quaternion.identity);//回転せずに生成
