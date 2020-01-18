@@ -565,6 +565,7 @@ MonoBehaviour:
   animals:
   - {fileID: 7907487247260918472, guid: 1683c2d6f705b6245b33714568dcf59e, type: 3}
   - {fileID: 4862730570592123209, guid: b9d2236b80b79df4ea71f8fbf8e08902, type: 3}
+  - {fileID: 6864971786854429569, guid: 8b9e735cae15876449c0d0892dc15c49, type: 3}
   mainCamera: {fileID: 637370070}
   pivotHeight: 6.5
   isGene: 0
