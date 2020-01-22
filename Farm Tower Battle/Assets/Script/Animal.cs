@@ -16,6 +16,7 @@ public class Animal : MonoBehaviour
     private void Start()
     {
         rigid = GetComponent<Rigidbody>();
+        rigid.isKinematic = true;
         isMoves.Add(moving);
     }
 

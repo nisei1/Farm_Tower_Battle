@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     private void OnTriggerStay(Collider collision)
     {
         isCollision = true;
-        //Debug.Log(isCollision);
+        Debug.Log(isCollision);
     }
 
     /// <summary>
