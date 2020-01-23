@@ -23,13 +23,16 @@ public class AnimalGenerator : MonoBehaviourPunCallbacks
     [SerializeField]
     public bool isFall;//生成された動物が落下中か
 
-    // ロビー最大人数
-    [SerializeField] private int maxPlayers = 2;
-
+    static RoomOptions RoomOPS = new RoomOptions()
+    {
+        MaxPlayers = 2, //0だと人数制限なし
+        IsOpen = true, //部屋に参加できるか
+        IsVisible = true, //この部屋がロビーにリストされるか
+    };
     private void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
-
+        PhotonNetwork.IsMessageQueueRunning = true;
         //Init();
     }
 
@@ -41,19 +44,58 @@ public class AnimalGenerator : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinOrCreateRoom("room", new RoomOptions(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("room", RoomOPS, TypedLobby.Default);
     }
 
     public override void OnJoinedRoom()
     {
-        Init();
+        while (PhotonNetwork.PlayerList.Length == 2)
+        {
+            Debug.Log(PhotonNetwork.CountOfPlayersInRooms);
+            Init();
+            if (!isGene)//生成されてるものがない
+            {
+                StartCoroutine(GenerateAnimal());//生成するコルーチンを動かす
+                isGene = true;
+                return;
+            }
+        }
+
     }
+
+    // 他のプレイヤーが入室してきた時
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
+    //    Debug.Log("OnPlayerEnteredRoom");
+    //    if (PhotonNetwork.CountOfPlayersInRooms == 2)
+    //    {
+    //        Init();
+    //        if (!isGene)//生成されてるものがない
+    //        {
+    //            StartCoroutine(GenerateAnimal());//生成するコルーチンを動かす
+    //            isGene = true;
+    //            return;
+    //        }
+    //    }
+    //    return;
+
+    //}
 
     /// <summary>
     /// 初期化処理
     /// </summary>
     void Init()
     {
+        // GameObject型の配列cubesに、"box"タグのついたオブジェクトをすべて格納
+        GameObject[] FirstAnimals = GameObject.FindGameObjectsWithTag("Animal");
+
+        // GameObject型の変数cubeに、cubesの中身を順番に取り出す。
+        // foreachは配列の要素の数だけループします。
+        foreach (GameObject FirstAnimal in FirstAnimals)
+        {
+            // 消す！
+            Destroy(FirstAnimal);
+        }
         animalNum = 0;
         isGameOver = false;
         Animal.isMoves.Clear();//移動してる動物のリストを初期化
@@ -63,58 +105,81 @@ public class AnimalGenerator : MonoBehaviourPunCallbacks
     // 毎フレーム呼び出される(60fpsだったら1秒間に60回)
     void Update()
     {
-        if (GameOver.isGameOverCollision) //GameOverColiderにオブジェクトが当たると
+        //OnJoinedRoom();
+        if (PhotonNetwork.PlayerList.Length == 2)
         {
-            isGameOver = true; //ゲームオーバー
-        }
-        if (isGameOver)
-        {
-            return;//ゲームオーバーならここで止める
-        }
-
-        if (CheckMove(Animal.isMoves))
-        {
-            return;//移動中なら処理はここまで
-        }
-
-        if (!isGene)//生成されてるものがない
-        {
-            StartCoroutine(GenerateAnimal());//生成するコルーチンを動かす
-            isGene = true;
-            return;
-        }
-        if (!EventSystem.current.IsPointerOverGameObject())    //レイをボタンに当たらないようにする
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);    //レイが当たった位置を得るよ
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            if (GameOver.isGameOverCollision) //GameOverColiderにオブジェクトが当たると
             {
-                float x = hit.point.x;
-                float z = hit.point.z;
+                isGameOver = true; //ゲームオーバー
+            }
+            if (isGameOver)
+            {
 
-                Vector3 v = new Vector3(x, pivotHeight, z); //オブジェクトを生成した高さで座標を得る
+                LeaveRoom();
+                isGameOver = false;
+                return;//ゲームオーバーならここで止める
+            }
 
-                //Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
+            if (CheckMove(Animal.isMoves))
+            {
+                return;//移動中なら処理はここまで
+            }
 
-                if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
+
+            if (!EventSystem.current.IsPointerOverGameObject())    //レイをボタンに当たらないようにする
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);    //レイが当たった位置を得るよ
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
                 {
-                    if (!RotateButton.onButtonDown)//ボタンをクリックしていたら反応させない
+                    float x = hit.point.x;
+                    float z = hit.point.z;
+
+                    Vector3 v = new Vector3(x, pivotHeight, z); //オブジェクトを生成した高さで座標を得る
+
+                    //Vector3 v = new Vector3(mainCamera.ScreenToWorldPoint(Input.mousePosition).x, pivotHeight);
+
+                    if (Input.GetMouseButtonUp(0))//もし（マウス左クリックが離されたら）
+                    {
+                        if (!RotateButton.onButtonDown)//ボタンをクリックしていたら反応させない
+                        {
+                            geneAnimal.transform.position = v;
+                            geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン
+                            animalNum++;//どうぶつ生成
+
+                        }
+                        geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン 上と同じ。バグを治すために一時的にここに書いた
+                        RotateButton.onButtonDown = false;//マウスが上がったらボタンも離れたと思う
+                        isFall = true;//落ちて、どうぞ
+                    }
+                    else if (Input.GetMouseButton(0))//ボタンが押されている間
                     {
                         geneAnimal.transform.position = v;
-                        geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン
-                        animalNum++;//どうぶつ生成
-
                     }
-                    geneAnimal.GetComponent<Rigidbody>().isKinematic = false;//――――物理挙動・オン 上と同じ。バグを治すために一時的にここに書いた
-                    RotateButton.onButtonDown = false;//マウスが上がったらボタンも離れたと思う
-                    isFall = true;//落ちて、どうぞ
-                }
-                else if (Input.GetMouseButton(0))//ボタンが押されている間
-                {
-                    geneAnimal.transform.position = v;
                 }
             }
+
+            if (PhotonNetwork.InRoom)
+            {
+                if (!isGene)//生成されてるものがない
+                {
+                    StartCoroutine(GenerateAnimal());//生成するコルーチンを動かす
+                    isGene = true;
+                    return;
+                }
+            }
+        }
+        return;
+    }
+
+    public void LeaveRoom() // ルームから退室
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.IsMessageQueueRunning = false;
+            // 退室
+            PhotonNetwork.LeaveRoom();
         }
     }
 

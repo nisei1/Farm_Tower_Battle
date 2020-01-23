@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667555, g: 0.48427182, b: 0.5645241, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -601,6 +601,8 @@ GameObject:
   m_Component:
   - component: {fileID: 742017420}
   - component: {fileID: 742017419}
+  - component: {fileID: 742017422}
+  - component: {fileID: 742017421}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -621,13 +623,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animals:
-  - {fileID: 7907487247260918472, guid: 1683c2d6f705b6245b33714568dcf59e, type: 3}
+  - {fileID: 2572397932518950151, guid: 2b7a38a660d9b2d4c998306ddcbfcf19, type: 3}
   - {fileID: 4862730570592123209, guid: b9d2236b80b79df4ea71f8fbf8e08902, type: 3}
   - {fileID: 6864971786854429569, guid: 8b9e735cae15876449c0d0892dc15c49, type: 3}
+  - {fileID: 4182901828500433423, guid: db8ad69f989012343a37bf44f3138b61, type: 3}
   mainCamera: {fileID: 637370070}
   pivotHeight: 6.5
   isGene: 0
   isFall: 0
+  maxPlayers: 2
 --- !u!4 &742017420
 Transform:
   m_ObjectHideFlags: 0
@@ -642,6 +646,43 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &742017421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742017418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+--- !u!114 &742017422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742017418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 742017421}
+  viewIdField: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &744825024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: f0b7d90e4ac8abc4bb8ccad405ecff1a,
