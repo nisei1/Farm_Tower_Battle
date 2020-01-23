@@ -15,7 +15,6 @@ public class GameOver : MonoBehaviour
     {
         isGameOverCollision = true;
         Debug.Log(isGameOverCollision);
-        Destroy(other.gameObject);
         RetryButton.SetActive(true);
     }
 

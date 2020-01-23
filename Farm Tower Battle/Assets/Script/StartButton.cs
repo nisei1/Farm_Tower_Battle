@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class RetryButton : MonoBehaviour
+public class StartButton : MonoBehaviour
 {
-    // ボタンをクリックするとTitleSceneに移動します
+    // ボタンをクリックするとGameSceneに移動します
     public void ButtonClicked()
     {
-        SceneManager.LoadScene("TitleScene");
+        SceneManager.LoadScene("GameScene");
     }
 }
