@@ -33,7 +33,7 @@ public class AnimalGenerator : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.IsMessageQueueRunning = true;
-        Init();
+        //Init();
     }
 
     void OnGUI()
@@ -52,7 +52,7 @@ public class AnimalGenerator : MonoBehaviourPunCallbacks
         while (PhotonNetwork.PlayerList.Length == 2)
         {
             Debug.Log(PhotonNetwork.CountOfPlayersInRooms);
-            //Init();
+            Init();
             if (!isGene)//生成されてるものがない
             {
                 StartCoroutine(GenerateAnimal());//生成するコルーチンを動かす
